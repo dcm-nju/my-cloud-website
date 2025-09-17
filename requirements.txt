@@ -1,10 +1,2 @@
-flask
-# Flask Web应用框架
 Flask==2.3.2
-
-# 处理文件上传的安全文件名
 Werkzeug==2.3.6
-
-# 生成唯一ID用于文件命名
-
-# 注意：uuid是Python标准库，不需要单独安装
