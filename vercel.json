@@ -9,12 +9,16 @@
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "/wsgi.py"
+            "dest": "wsgi.py"
         }
     ],
     "functions": {
         "wsgi.py": {
-            "maxDuration": 10
+            "maxDuration": 10,
+            "runtime": "python3.9"
         }
+    },
+    "env": {
+        "FLASK_ENV": "production"
     }
 }
