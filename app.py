@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import random
 import os
+from flask import Flask, jsonify, render_template, request, flash
 from werkzeug.utils import secure_filename
 import uuid
 
@@ -12,6 +13,7 @@ app.config['SECRET_KEY'] = 'your-secret-key-here'
 
 # 静态文件夹配置
 UPLOAD_FOLDER = 'static/images'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # 确保上传目录存在
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -86,18 +88,14 @@ def identify_cloud():
     identified_cloud = random.choice(cloud_types_list)
     cloud_info = cloud_types[identified_cloud]
     
-    # 检查是否有文件上传
+    # 检查是否有文件上传（在Vercel环境中，我们不保存文件，只确认接收）
     if 'cloud_image' in request.files:
         file = request.files['cloud_image']
         if file.filename != '':
-            try:
-                # 保存上传的云图片
-                filename = f"cloud_{uuid.uuid4()}.{file.filename.rsplit('.', 1)[1].lower()}"
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                file.save(file_path)
-                flash('云图片上传成功！')
-            except Exception as e:
-                flash(f'图片上传失败：{str(e)}')
+            # 在Vercel的无服务器环境中，文件系统是只读的
+            # 我们只确认收到了文件，但不实际保存
+            # 在实际生产环境中，应该使用云存储服务（如AWS S3）存储文件
+            pass
     
     return jsonify({
         'cloud_type': identified_cloud,
@@ -118,6 +116,7 @@ def home():
                            initial_food=initial_food, 
                            initial_quote=initial_quote)
 
-# 启动网站（允许外部设备访问）
+# 在Vercel环境中，不需要显式调用app.run()，Vercel会自动通过WSGI服务器运行应用
+# 以下代码仅在本地开发时使用
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
